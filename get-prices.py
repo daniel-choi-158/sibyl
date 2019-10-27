@@ -1,5 +1,5 @@
 # =============================================================================
-# Import securities data using Pandas Datareader
+# Import securities data in OHLCD format using Pandas Datareader
 # =============================================================================
 
 # Import necesary libraries
@@ -7,8 +7,10 @@ import pandas as pd
 import pandas_datareader.data as pdr
 import datetime
 
-# Download historical data for NIFTY constituent stocks
-tickers = ["PLS.AX","ARL.AX"]
+with open('./dictionary/securities.txt', 'r') as f:
+    tickers = f.read().splitlines()
+print(tickers)
+
 
 stock_cp = pd.DataFrame() # dataframe to store close price of each ticker
 attempt = 0 # initializing passthrough variable
@@ -17,7 +19,7 @@ while len(tickers) != 0 and attempt <= 5:
     tickers = [j for j in tickers if j not in successful] # removing stocks whose data has been extracted from the ticker list
     for i in range(len(tickers)):
         try:
-            temp = pdr.get_data_yahoo(tickers[i],datetime.date.today()-datetime.timedelta(365),datetime.date.today())
+            temp = pdr.get_data_yahoo(tickers[i],datetime.date.today()-datetime.timedelta(365),datetime.date.today(),interval='d')
             temp.dropna(inplace = True)
             stock_cp[tickers[i]] = temp["Adj Close"]
             successful.append(tickers[i])       
