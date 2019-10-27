@@ -1,12 +1,30 @@
+# =============================================================================
+# Import securities data using Pandas Datareader
+# =============================================================================
+
+# Import necesary libraries
+import pandas as pd
 import pandas_datareader.data as pdr
-import datetime as dt
-import logging
+import datetime
 
-ticker = "AMZN"
-start_date = dt.date.today() - dt.timedelta(365);
-end_date = dt.date.today();
+# Download historical data for NIFTY constituent stocks
+tickers = ["PLS.AX","ARL.AX"]
 
-data = pdr.get_data_yahoo(ticker, start_date, end_date, interval="d");
-
-print(data);
-print('run complete.');
+stock_cp = pd.DataFrame() # dataframe to store close price of each ticker
+attempt = 0 # initializing passthrough variable
+successful = [] # initializing list to store tickers whose close price was successfully extracted
+while len(tickers) != 0 and attempt <= 5:
+    tickers = [j for j in tickers if j not in successful] # removing stocks whose data has been extracted from the ticker list
+    for i in range(len(tickers)):
+        try:
+            temp = pdr.get_data_yahoo(tickers[i],datetime.date.today()-datetime.timedelta(365),datetime.date.today())
+            temp.dropna(inplace = True)
+            stock_cp[tickers[i]] = temp["Adj Close"]
+            successful.append(tickers[i])       
+        except:
+            print(tickers[i]," :failed to fetch data...retrying")
+            continue
+    attempt += 1
+    
+print(stock_cp)
+print("process complete.")
