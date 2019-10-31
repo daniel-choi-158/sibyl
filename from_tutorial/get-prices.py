@@ -9,7 +9,6 @@ import datetime
 
 with open('./dictionary/securities.txt', 'r') as f:
     tickers = f.read().splitlines()
-print(tickers)
 
 
 stock_cp = pd.DataFrame() # dataframe to store close price of each ticker
@@ -29,4 +28,3 @@ while len(tickers) != 0 and attempt <= 5:
     attempt += 1
     
 print(stock_cp)
-print("process complete.")
